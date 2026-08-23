@@ -5,6 +5,17 @@ ARGOCD_VERSION="${ARGOCD_VERSION:-v3.5.0}"
 ARGO_ROLLOUTS_VERSION="${ARGO_ROLLOUTS_VERSION:-v1.9.1}"
 KUBE_PROM_STACK_VERSION="${KUBE_PROM_STACK_VERSION:-87.18.1}"
 
+require_tool() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "Missing required tool: $1" >&2
+    echo "Install it, confirm '$1 version' works, then rerun this script." >&2
+    exit 1
+  fi
+}
+
+require_tool kubectl
+require_tool helm
+
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 # ArgoCD CRDs are large enough that client-side apply can exceed the
 # kubectl.kubernetes.io/last-applied-configuration annotation limit.
